@@ -46,7 +46,7 @@ class Robot:
 
 # Initialize robots
 leader = Robot(0, 0, 0)
-follower = Robot(-L, 0, np.deg2rad(90))
+follower = Robot(-L, 0, np.deg2rad(0))
 
 # Initialize PID controllers
 pid_vx = PID(10, 1.5, 0.1)
