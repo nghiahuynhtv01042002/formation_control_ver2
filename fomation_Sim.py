@@ -6,6 +6,7 @@ from matplotlib.animation import FuncAnimation
 dt = 0.1  # time step
 L = 0.6  # distance between robots
 RADIUS = 0.2  # radius of the robot
+vmax = 0.2
 
 # PID Controller class
 class PID:
@@ -61,18 +62,29 @@ follower_arrow = ax.arrow(follower.x, follower.y, RADIUS * np.cos(follower.theta
 
 ax.add_patch(leader_circle)
 ax.add_patch(follower_circle)
+def limit_velocity(v_r,v_l):
+    if v_r > vmax: 
+        v_r = vmax
+    elif v_r < -vmax:
+        v_r = -vmax
 
+    if v_l > vmax : 
+        v_l = vmax
+    elif v_l < -vmax:
+        v_l = -vmax
+    return v_r,v_l
 def init():
-    ax.set_xlim(-3, 10)
-    ax.set_ylim(-3, 4)
+    ax.set_xlim(-3, 5)
+    ax.set_ylim(-3, 5)
+    ax.grid(True)
     return leader_circle, follower_circle, leader_arrow, follower_arrow
 
 def update(frame):
     global leader, follower, leader_circle, follower_circle, leader_arrow, follower_arrow
 
     # Leader's control (move in the x direction with constant speed)
-    leader_vx = 0.2  # constant speed in x direction
-    leader_vy = 0.0  # no movement in y direction
+    leader_vx = 0.14  # constant speed in x direction
+    leader_vy = 0.14  # no movement in y direction
     # leader.w  = 0 
     # v_leader = vx *np.cos(leader.theta) + vy.np.sin(leader.theta)
 
@@ -100,16 +112,17 @@ def update(frame):
 
     v_r = v + (w * 0.2/ 2)
     v_l = v - (w * 0.2 / 2)
-    #limit vel
-    if v_r > 0.2 : 
-        v_r = 0.2
-    elif v_r < -0.2:
-        v_r = -0.2
+    v_r, v_l = limit_velocity(v_r, v_l)
+    # #limit vel
+    # if v_r > 0.2 : 
+    #     v_r = 0.2
+    # elif v_r < -0.2:
+    #     v_r = -0.2
 
-    if v_l > 0.2 : 
-        v_l = 0.2
-    elif v_l < -0.2:
-        v_l = -0.2
+    # if v_l > 0.2 : 
+    #     v_l = 0.2
+    # elif v_l < -0.2:
+    #     v_l = -0.2
 
     # Update follower's position
     follower.update_odom(v_r, v_l, L)
